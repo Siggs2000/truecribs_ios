@@ -21,9 +21,11 @@ class GameSelectScreen < PM::TableScreen
   end
 
   def select_game(item)
-    game = Game.where(:api_id).eq(item).first
+    mp item
+    game = Game.where(:api_id).eq(item[:game]).first
     App::Persistence['game_id'] = game.api_id
-    open ControlScreen.new(nav_bar:true)
+    #open ControlScreen.new(nav_bar:true)
+    join_game(game.api_id)
   end
 
   def on_refresh
@@ -51,6 +53,21 @@ class GameSelectScreen < PM::TableScreen
         else
           # handle no games available
         end
+      else
+        open GameSelectScreen.new(nav_bar: false)
+      end
+    end
+  end
+
+  def join_game(game_id)
+    @data = {user_id: App::Persistence['user_id'], game_id:game_id }
+    BW::HTTP.post("#{API_URL}/games/#{game_id}/join_game", {payload: @data}) do |response|
+      p response
+      if response.ok?
+        mp json = BW::JSON.parse(response.body)
+        #open ControlScreen.new(nav_bar:true)
+        App::Persistence['question_count'] = 1
+        app_delegate.get_question(App::Persistence['question_count'])
       else
         open GameSelectScreen.new(nav_bar: false)
       end

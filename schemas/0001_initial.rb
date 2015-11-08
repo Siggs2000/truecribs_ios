@@ -8,6 +8,12 @@ schema "0001 initial" do
     integer32 :api_id
   end
 
+  entity "Answer" do
+    string :body
+    string :image
+    integer32 :api_id
+  end
+
   # entity "Post" do
   #   string :title, optional: false
   #   string :body

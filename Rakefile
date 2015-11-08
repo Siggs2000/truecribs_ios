@@ -10,13 +10,15 @@ Bundler.require
 Motion::Project::App.setup do |app|
   # Use `rake config' to see complete project settings
 
-  app.name = 'truecribs_ios'
-  app.identifier = 'com.your_domain_here.truecribs_ios'
-
-  app.short_version = '0.1.0'
-  # Get version from git
-  #app.version = (`git rev-list HEAD --count`.strip.to_i).to_s
-  app.version = app.short_version
+  app.name = 'TrueCribs'
+  app.identifier = 'com.truecribs'
+  app.seed_id    = "QKKZN47C74"
+    app.short_version = '0.1.0'
+    # Get version from git
+    #app.version = (`git rev-list HEAD --count`.strip.to_i).to_s
+    app.version = app.short_version
+    app.info_plist['CFBundleVersion'] = app.version
+    app.info_plist['CFBundleShortVersionString'] = app.version
 
   # RubyMotion by default selects the latest SDK you have installed,
   # if you would like to specify the SDK to assure consistency across multiple machines,
@@ -25,13 +27,14 @@ Motion::Project::App.setup do |app|
   # app.sdk_version = '7.1'
 
   # Target OS
-  app.deployment_target = '7.1'
+  app.deployment_target = '8.0'
   # app.deployment_target = '8.0'
+  app.sdk_version = '9.1'
 
   app.icons = Dir.glob("resources/icon*.png").map{|icon| icon.split("/").last}
 
   app.device_family = [:iphone, :ipad]
-  app.interface_orientations = [:portrait, :landscape_left, :landscape_right, :portrait_upside_down]
+  app.interface_orientations = [:landscape_left, :landscape_right]
 
   app.files += Dir.glob(File.join(app.project_dir, 'lib/**/*.rb'))
 
@@ -43,7 +46,7 @@ Motion::Project::App.setup do |app|
   # app.vendor_project('vendor/Flurry', :static)
   # app.vendor_project('vendor/DSLCalendarView', :static, :cflags => '-fobjc-arc') # Using arc
   app.info_plist['NSAppTransportSecurity'] = { 'NSAllowsArbitraryLoads' => true }
-  
+
   app.pods do
     pod 'SDWebImage'
   #   pod 'JGProgressHUD'
@@ -52,8 +55,15 @@ Motion::Project::App.setup do |app|
   end
 
   app.development do
-    app.codesign_certificate = "iPhone Developer: YOURNAME"
-    app.provisioning_profile = "signing/truecribs_ios.mobileprovision"
+    app.codesign_certificate = "iPhone Developer: Seth Siegler (ZTGHVU7A3C)"
+    app.provisioning_profile = "./environment/truecribs_dev.mobileprovision"
+    app.entitlements['aps-environment'] = 'development'
+    app.entitlements['get-task-allow'] = true
+
+    app.entitlements['application-identifier'] = app.seed_id + '.' + app.identifier
+    app.entitlements['keychain-access-groups'] = [
+    app.seed_id + '.' + app.identifier
+  ]
   end
 
   app.release do
