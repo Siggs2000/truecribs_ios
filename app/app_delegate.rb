@@ -9,7 +9,12 @@ class AppDelegate < PM::Delegate
 
   def on_load(app, options)
     cdq.setup # Remove this if you aren't using CDQ
-    open SignInScreen.new(nav_bar: true)
+
+    if App::Persistence['user_id'].nil?
+      open SignInScreen.new(nav_bar: true)
+    else
+      open GameSelectScreen.new(nav_bar:true)
+    end
   end
 
   def get_question(question_count)

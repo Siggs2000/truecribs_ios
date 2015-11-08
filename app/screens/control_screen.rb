@@ -35,6 +35,7 @@ class ControlScreen < PM::Screen
 
   def send_answer(answer_id)
     @data = {user_id: App::Persistence['user_id'], answer_id:answer_id }
+    mp @data
     BW::HTTP.post("#{API_URL}/guesses", {payload: @data}) do |response|
       p response
       if response.ok?
