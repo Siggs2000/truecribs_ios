@@ -8,17 +8,19 @@ class SubmittedAnswerScreen < PM::Screen
   end
 
   def check_game_status
-    BW::HTTP.get("#{API_URL}/games/#{App::Persistence['game_id']}", {payload: @data}) do |response|
-      p response
-      if response.ok?
-        mp json = BW::JSON.parse(response.body)
-        game = json['result']
-        if App::Persistence['question_count'] == game['stage']
-        #open ControlScreen.new(nav_bar:true)
-          app_delegate.get_question(App::Persistence['question_count'])
+    timer = EM.add_periodic_timer 3.0 do
+      BW::HTTP.get("#{API_URL}/games/#{App::Persistence['game_id']}", {payload: @data}) do |response|
+        p response
+        if response.ok?
+          mp json = BW::JSON.parse(response.body)
+          game = json['result']
+          if App::Persistence['question_count'] == game['stage']
+            EM.cancel_timer(timer)
+            app_delegate.get_question(App::Persistence['question_count'])
+          end
+        else
+          open GameSelectScreen.new(nav_bar: false)
         end
-      else
-        open GameSelectScreen.new(nav_bar: false)
       end
     end
   end
